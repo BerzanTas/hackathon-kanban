@@ -1,0 +1,21 @@
+# Build output (rebuilt inside the image)
+target/
+
+# IDE / editor metadata
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Docs
+HELP.md
