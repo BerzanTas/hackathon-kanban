@@ -9,6 +9,8 @@ public interface TicketRepository extends JpaRepository<Ticket, UUID> {
 
     List<Ticket> findByTeamId(UUID teamId);
 
+    List<Ticket> findByTeamIdOrderByModifiedAtDesc(UUID teamId);
+
     boolean existsByTeamId(UUID teamId);
 
     boolean existsByEpicId(UUID epicId);

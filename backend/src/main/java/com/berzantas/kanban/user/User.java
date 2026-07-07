@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -40,7 +41,15 @@ public class User {
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
 
-    @CreationTimestamp
+    // Service-owned: UserService advances this on update (dirty-check). Not
+    // @CreationTimestamp, which would make the column insert-only and drop service updates.
     @Column(name = "modified_at", nullable = false)
     private OffsetDateTime modifiedAt;
+
+    @PrePersist
+    void initModifiedAt() {
+        if (modifiedAt == null) {
+            modifiedAt = OffsetDateTime.now();
+        }
+    }
 }
