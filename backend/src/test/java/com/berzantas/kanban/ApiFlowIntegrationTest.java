@@ -23,6 +23,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -128,6 +129,29 @@ class ApiFlowIntegrationTest extends AbstractPersistenceIT {
                         .content(json.writeValueAsString(Map.of("type", "bug", "title", "   ", "body", "Body"))))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors.title").exists());
+    }
+
+    // A fresh context is required: Spring Security's csrf() request post-processor (used by other
+    // tests in this class) permanently swaps the shared CsrfFilter's token repository for a test
+    // repository that stores the token in a request attribute instead of the XSRF-TOKEN cookie.
+    // BEFORE_METHOD gives this test the real CookieCsrfTokenRepository so the cookie is actually written.
+    @org.springframework.test.annotation.DirtiesContext(
+            methodMode = org.springframework.test.annotation.DirtiesContext.MethodMode.BEFORE_METHOD)
+    @Test
+    void authenticatedGetIssuesCsrfCookie() throws Exception {
+        UserPrincipal actor = seedVerifiedUser("csrf-" + UUID.randomUUID() + "@example.com", "CSRF User");
+        mvc.perform(get("/teams").with(user(actor)))
+                .andExpect(status().isOk())
+                .andExpect(cookie().exists("XSRF-TOKEN"));
+    }
+
+    @Test
+    void mutatingRequestWithoutCsrfTokenReturns403() throws Exception {
+        UserPrincipal actor = seedVerifiedUser("nocsrf-" + UUID.randomUUID() + "@example.com", "NoCSRF User");
+        mvc.perform(post("/teams").with(user(actor))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json.writeValueAsString(Map.of("name", "CSRF Team " + UUID.randomUUID()))))
+                .andExpect(status().isForbidden());
     }
 
     @Test

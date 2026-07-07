@@ -1,5 +1,6 @@
 package com.berzantas.kanban.common;
 
+import com.berzantas.kanban.security.CsrfCookieFilter;
 import com.berzantas.kanban.security.ProblemDetailAccessDeniedHandler;
 import com.berzantas.kanban.security.ProblemDetailAuthEntryPoint;
 import org.springframework.context.annotation.Bean;
@@ -7,7 +8,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 
 /**
  * Session-cookie security. Public endpoints: sign-up, login, verify, resend, and the OpenAPI docs.
@@ -32,7 +35,9 @@ public class SecurityConfig {
                         .anyRequest().authenticated())
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
                         .ignoringRequestMatchers("/auth/login", "/auth/signup", "/auth/resend"))
+                .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)

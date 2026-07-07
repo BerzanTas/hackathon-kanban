@@ -82,7 +82,8 @@ class AuthFlowIntegrationTest extends AbstractPersistenceIT {
     void wrongPasswordReturns401() throws Exception {
         String email = "badpw-" + UUID.randomUUID() + "@example.com";
         signup(email, "password123");
-        mvc.perform(get("/auth/verify").param("token", currentToken(email)));
+        mvc.perform(get("/auth/verify").param("token", currentToken(email)))
+                .andExpect(status().isFound());
 
         mvc.perform(post("/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)

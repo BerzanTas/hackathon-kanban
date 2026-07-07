@@ -9,7 +9,7 @@ import java.util.UUID;
 
 /**
  * Request body for creating a ticket. The team comes from the path and the creating user from
- * the {@code X-Acting-User-Id} header (temporary, until authentication). State always starts at
+ * the authenticated security context. State always starts at
  * {@code new}, so it is not part of this request. {@code epicId} is optional but, when present,
  * must reference an epic in the same team.
  */
