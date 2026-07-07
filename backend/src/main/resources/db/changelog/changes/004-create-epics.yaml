@@ -1,0 +1,55 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004-create-epics
+      author: kanban
+      changes:
+        - createTable:
+            tableName: epics
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_epics
+                    nullable: false
+              - column:
+                  name: team_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: title
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: modified_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            constraintName: uq_epics_id_team
+            tableName: epics
+            columnNames: id, team_id
+        - addForeignKeyConstraint:
+            constraintName: fk_epics_team
+            baseTableName: epics
+            baseColumnNames: team_id
+            referencedTableName: teams
+            referencedColumnNames: id
+            onDelete: RESTRICT
+        - createIndex:
+            indexName: ix_epics_team_id
+            tableName: epics
+            columns:
+              - column:
+                  name: team_id

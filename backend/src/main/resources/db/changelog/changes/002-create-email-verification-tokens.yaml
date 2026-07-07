@@ -1,0 +1,53 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-create-email-verification-tokens
+      author: kanban
+      changes:
+        - createTable:
+            tableName: email_verification_tokens
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_email_verification_tokens
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: token
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uq_email_verification_tokens_token
+              - column:
+                  name: expires_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: consumed_at
+                  type: TIMESTAMP WITH TIME ZONE
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            constraintName: fk_email_verification_tokens_user
+            baseTableName: email_verification_tokens
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: CASCADE
+        - createIndex:
+            indexName: ix_email_verification_tokens_user_id
+            tableName: email_verification_tokens
+            columns:
+              - column:
+                  name: user_id
