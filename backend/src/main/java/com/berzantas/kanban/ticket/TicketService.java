@@ -74,6 +74,11 @@ public class TicketService {
         return ticketRepository.findByTeamIdOrderByModifiedAtDesc(teamId);
     }
 
+    /** Board listing with optional type/epic/title-substring filters, most-recently-modified first. */
+    public List<Ticket> listByTeam(UUID teamId, TicketFilter filter) {
+        return ticketRepository.findByTeamFiltered(teamId, filter.type(), filter.epicId(), filter.q());
+    }
+
     @Transactional
     public Ticket update(UUID id, @Valid UpdateTicketCommand command) {
         Ticket ticket = getById(id);
