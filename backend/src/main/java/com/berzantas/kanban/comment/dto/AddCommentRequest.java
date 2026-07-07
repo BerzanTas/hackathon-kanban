@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 
 /**
  * Request body for adding a comment. The ticket comes from the path and the author from the
- * {@code X-Acting-User-Id} header (temporary, until authentication).
+ * authenticated security context.
  */
 public record AddCommentRequest(
         @NotBlank String body) {

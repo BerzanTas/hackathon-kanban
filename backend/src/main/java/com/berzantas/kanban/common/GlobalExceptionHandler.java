@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -44,6 +46,22 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ValidationException.class)
     ProblemDetail handleValidation(ValidationException ex, HttpServletRequest request) {
         return problem(HttpStatus.BAD_REQUEST, ex.getMessage(), request);
+    }
+
+    /** Login with an unverified account. The 403 code lets the login screen offer a resend. */
+    @ExceptionHandler(DisabledException.class)
+    ProblemDetail handleDisabled(DisabledException ex, HttpServletRequest request) {
+        ProblemDetail problem = problem(HttpStatus.FORBIDDEN, "Email address is not verified.", request);
+        problem.setProperty("code", "email_not_verified");
+        return problem;
+    }
+
+    /** Bad password or unknown email (the provider hides which). */
+    @ExceptionHandler(BadCredentialsException.class)
+    ProblemDetail handleBadCredentials(BadCredentialsException ex, HttpServletRequest request) {
+        ProblemDetail problem = problem(HttpStatus.UNAUTHORIZED, "Invalid email or password.", request);
+        problem.setProperty("code", "bad_credentials");
+        return problem;
     }
 
     /** Field-level failures from {@code @Validated} service beans (constraints on command records). */
