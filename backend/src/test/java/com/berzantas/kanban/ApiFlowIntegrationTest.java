@@ -176,6 +176,29 @@ class ApiFlowIntegrationTest extends AbstractPersistenceIT {
         org.junit.jupiter.api.Assertions.assertFalse(doc.contains("READY_FOR_IMPLEMENTATION"));
     }
 
+    @Test
+    void openApiDocumentsErrorContractAndAccurateStatusCodes() throws Exception {
+        mvc.perform(get("/v3/api-docs"))
+                .andExpect(status().isOk())
+                // RFC 7807 error schema, including the two frontend-facing extension members.
+                .andExpect(jsonPath("$.components.schemas.ProblemDetail").exists())
+                .andExpect(jsonPath("$.components.schemas.ProblemDetail.properties.errors").exists())
+                .andExpect(jsonPath("$.components.schemas.ProblemDetail.properties.code").exists())
+                // Session security scheme, applied globally.
+                .andExpect(jsonPath("$.components.securitySchemes.session.in", is("cookie")))
+                .andExpect(jsonPath("$.security[0].session").exists())
+                // Create endpoints are documented as 201, not the springdoc-inferred 200.
+                .andExpect(jsonPath("$.paths.['/teams'].post.responses.201").exists())
+                .andExpect(jsonPath("$.paths.['/teams'].post.responses.200").doesNotExist())
+                // Error responses springdoc cannot infer are present.
+                .andExpect(jsonPath("$.paths.['/tickets/{id}'].get.responses.401").exists())
+                .andExpect(jsonPath("$.paths.['/tickets/{id}'].get.responses.404").exists())
+                .andExpect(jsonPath("$.paths.['/teams'].post.responses.409").exists())
+                .andExpect(jsonPath("$.paths.['/auth/login'].post.responses.403").exists())
+                // Public auth endpoints waive the session requirement (empty security array).
+                .andExpect(jsonPath("$.paths.['/auth/login'].post.security", hasSize(0)));
+    }
+
     // --- helpers ---
 
     private UserPrincipal seedVerifiedUser(String email, String displayName) {
