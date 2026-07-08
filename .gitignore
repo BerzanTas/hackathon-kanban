@@ -76,3 +76,7 @@ pnpm-debug.log*
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Informational only — API reference for Claude sessions, never committed
+# ---------------------------------------------------------------------------
+frontend/src/openapi.json

@@ -9,7 +9,7 @@ test('bootstraps the session and renders the board when authenticated', async ()
 
   await waitFor(() =>
     expect(
-      screen.getByRole('heading', { name: /kanban board/i }),
+      screen.getByRole('button', { name: /new ticket/i }),
     ).toBeInTheDocument(),
   )
   expect(screen.getByText('qa@example.com')).toBeInTheDocument()
