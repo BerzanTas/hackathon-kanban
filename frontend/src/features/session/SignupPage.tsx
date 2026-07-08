@@ -6,7 +6,9 @@ import { api, ApiRequestError } from '@/lib/apiClient'
 import { Alert } from '@/components/Alert'
 import { Button } from '@/components/Button'
 import { TextField } from '@/components/TextField'
+import { MailIcon } from '@/components/icons'
 import type { SignupRequest } from '@/types/api'
+import { AuthLayout } from './AuthLayout'
 import { useResend } from './useResend'
 import { isEmail, minLength } from './validation'
 
@@ -80,13 +82,23 @@ export function SignupPage() {
 
   if (submittedEmail) {
     return (
-      <main className="mx-auto max-w-md p-8">
-        <h1 className="text-2xl font-semibold">Check your email</h1>
-        <p className="mt-2 text-slate-600">
-          We sent a verification link to <strong>{submittedEmail}</strong>. Click
-          it to activate your account, then log in.
-        </p>
-        <div className="mt-6 flex flex-col gap-3">
+      <AuthLayout>
+        <div className="flex flex-col items-center text-center">
+          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-50 text-brand-600 ring-8 ring-brand-50/60">
+            <MailIcon className="h-7 w-7" />
+          </span>
+          <h1 className="mt-5 text-2xl font-bold tracking-tight text-slate-900">
+            Check your email
+          </h1>
+          <p className="mt-2 text-sm text-slate-500">
+            We sent a verification link to{' '}
+            <strong className="font-semibold text-slate-700">
+              {submittedEmail}
+            </strong>
+            . Click it to activate your account, then log in.
+          </p>
+        </div>
+        <div className="mt-8 flex flex-col gap-3">
           {resend.status === 'sent' ? (
             <Alert variant="info">
               If that account exists, we’ve sent a new link.
@@ -96,24 +108,32 @@ export function SignupPage() {
               type="button"
               pending={resend.status === 'sending'}
               onClick={() => resend.resend(submittedEmail)}
+              className="w-full"
             >
               Resend email
             </Button>
           )}
-          <Link to="/login" className="text-sm font-medium underline">
+          <Link
+            to="/login"
+            className="text-center text-sm font-semibold text-brand-600 hover:text-brand-700"
+          >
             Back to login
           </Link>
         </div>
-      </main>
+      </AuthLayout>
     )
   }
 
   return (
-    <main className="mx-auto max-w-md p-8">
-      <h1 className="text-2xl font-semibold">Create account</h1>
-      <p className="mt-1 text-slate-500">Email verification is required.</p>
+    <AuthLayout>
+      <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+        Create account
+      </h1>
+      <p className="mt-1.5 text-sm text-slate-500">
+        Email verification is required before your first login.
+      </p>
 
-      <form className="mt-6 flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
+      <form className="mt-8 space-y-5" onSubmit={handleSubmit} noValidate>
         {formError && <Alert variant="error">{formError}</Alert>}
         <TextField
           label="Email"
@@ -122,6 +142,7 @@ export function SignupPage() {
           onChange={(e) => setEmail(e.target.value)}
           error={fieldErrors.email}
           autoComplete="email"
+          placeholder="name@example.com"
         />
         <TextField
           label="Display name"
@@ -129,6 +150,7 @@ export function SignupPage() {
           onChange={(e) => setDisplayName(e.target.value)}
           error={fieldErrors.displayName}
           autoComplete="name"
+          placeholder="Jane Doe"
         />
         <TextField
           label="Password"
@@ -147,17 +169,20 @@ export function SignupPage() {
           error={fieldErrors.confirmPassword}
           autoComplete="new-password"
         />
-        <Button type="submit" pending={pending}>
+        <Button type="submit" pending={pending} className="w-full">
           Sign up
         </Button>
       </form>
 
-      <p className="mt-6 text-sm text-slate-600">
+      <p className="mt-8 text-center text-sm text-slate-500">
         Already registered?{' '}
-        <Link to="/login" className="font-medium underline">
+        <Link
+          to="/login"
+          className="font-semibold text-brand-600 hover:text-brand-700"
+        >
           Log in
         </Link>
       </p>
-    </main>
+    </AuthLayout>
   )
 }

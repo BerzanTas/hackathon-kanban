@@ -6,6 +6,7 @@ import { ApiRequestError } from '@/lib/apiClient'
 import { Alert } from '@/components/Alert'
 import { Button } from '@/components/Button'
 import { TextField } from '@/components/TextField'
+import { AuthLayout } from './AuthLayout'
 import { useResend } from './useResend'
 import { isEmail } from './validation'
 
@@ -63,22 +64,24 @@ export function LoginPage() {
   }
 
   return (
-    <main className="mx-auto max-w-md p-8">
-      <h1 className="text-2xl font-semibold">Log in</h1>
-      <p className="mt-1 text-slate-500">Use your verified account.</p>
+    <AuthLayout>
+      <h1 className="text-2xl font-bold tracking-tight text-slate-900">Log in</h1>
+      <p className="mt-1.5 text-sm text-slate-500">
+        Welcome back — sign in to your account.
+      </p>
 
-      <form className="mt-6 flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
+      <form className="mt-8 space-y-5" onSubmit={handleSubmit} noValidate>
         {formError && <Alert variant="error">{formError}</Alert>}
 
         {unverified && (
           <Alert variant="info">
-            <p>Your email isn’t verified yet.</p>
+            <p className="font-medium">Your email isn’t verified yet.</p>
             {resend.status === 'sent' ? (
-              <p className="mt-2">If that account exists, we’ve sent a new link.</p>
+              <p className="mt-1">If that account exists, we’ve sent a new link.</p>
             ) : (
               <button
                 type="button"
-                className="mt-2 font-medium underline disabled:opacity-60"
+                className="mt-1.5 font-semibold text-brand-700 underline underline-offset-2 hover:text-brand-800 disabled:opacity-60"
                 disabled={resend.status === 'sending'}
                 onClick={() => resend.resend(email)}
               >
@@ -95,6 +98,7 @@ export function LoginPage() {
           onChange={(e) => setEmail(e.target.value)}
           error={fieldErrors.email}
           autoComplete="email"
+          placeholder="name@example.com"
         />
         <TextField
           label="Password"
@@ -104,17 +108,20 @@ export function LoginPage() {
           error={fieldErrors.password}
           autoComplete="current-password"
         />
-        <Button type="submit" pending={pending}>
+        <Button type="submit" pending={pending} className="w-full">
           Log in
         </Button>
       </form>
 
-      <p className="mt-6 text-sm text-slate-600">
+      <p className="mt-8 text-center text-sm text-slate-500">
         Need an account?{' '}
-        <Link to="/signup" className="font-medium underline">
+        <Link
+          to="/signup"
+          className="font-semibold text-brand-600 hover:text-brand-700"
+        >
           Create an account
         </Link>
       </p>
-    </main>
+    </AuthLayout>
   )
 }
