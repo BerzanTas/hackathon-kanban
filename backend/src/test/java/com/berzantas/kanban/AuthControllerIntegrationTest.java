@@ -49,11 +49,11 @@ class AuthControllerIntegrationTest extends AbstractPersistenceIT {
         UUID userId = userRepository.findByEmailIgnoreCase(email).orElseThrow().getId();
         String token = tokenRepository.findByUserIdAndConsumedAtIsNull(userId).get(0).getToken();
 
-        // Verify: redirects to the SPA login with a success flag.
+        // Verify: redirects to the SPA verification-result screen with a success flag.
         mvc.perform(get("/auth/verify").param("token", token))
                 .andExpect(status().isFound())
                 .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers
-                        .redirectedUrlPattern("**/login?verified=true"));
+                        .redirectedUrlPattern("**/verify?verified=true"));
 
         // Log in: 200 + profile, session established.
         MvcResult login = mvc.perform(post("/auth/login")

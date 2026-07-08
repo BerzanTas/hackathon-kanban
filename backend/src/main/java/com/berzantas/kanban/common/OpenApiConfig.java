@@ -110,7 +110,7 @@ public class OpenApiConfig {
         } else if ("/auth/verify".equals(path)) {
             responses.remove("200");
             responses.addApiResponse("302", new ApiResponse().description(
-                    "Redirect to the frontend login page with a verification-result query parameter "
+                    "Redirect to the frontend verification page with a verification-result query parameter "
                             + "(verified=true, error=expired, or error=invalid). Intended for the browser, "
                             + "not a fetch client."));
         }
