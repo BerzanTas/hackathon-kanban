@@ -88,9 +88,9 @@ public class AuthController {
     public ResponseEntity<Void> verify(@RequestParam String token) {
         VerificationOutcome outcome = emailVerificationService.verify(token);
         String target = switch (outcome) {
-            case VERIFIED -> frontendBaseUrl + "/login?verified=true";
-            case EXPIRED -> frontendBaseUrl + "/login?error=expired";
-            case INVALID -> frontendBaseUrl + "/login?error=invalid";
+            case VERIFIED -> frontendBaseUrl + "/verify?verified=true";
+            case EXPIRED -> frontendBaseUrl + "/verify?error=expired";
+            case INVALID -> frontendBaseUrl + "/verify?error=invalid";
         };
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(target)).build();
     }

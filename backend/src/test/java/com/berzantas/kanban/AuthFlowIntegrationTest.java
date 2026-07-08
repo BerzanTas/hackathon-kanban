@@ -131,10 +131,10 @@ class AuthFlowIntegrationTest extends AbstractPersistenceIT {
         mvc.perform(get("/auth/verify").param("token", first))
                 .andExpect(status().isFound())
                 .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers
-                        .redirectedUrlPattern("**/login?error=invalid"));
+                        .redirectedUrlPattern("**/verify?error=invalid"));
         mvc.perform(get("/auth/verify").param("token", second))
                 .andExpect(status().isFound())
                 .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers
-                        .redirectedUrlPattern("**/login?verified=true"));
+                        .redirectedUrlPattern("**/verify?verified=true"));
     }
 }
