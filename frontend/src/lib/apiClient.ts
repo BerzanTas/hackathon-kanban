@@ -27,7 +27,7 @@ export class ApiRequestError extends Error {
 const CSRF_COOKIE = 'XSRF-TOKEN'
 const CSRF_HEADER = 'X-XSRF-TOKEN'
 const MUTATING = new Set(['POST', 'PUT', 'PATCH', 'DELETE'])
-const BASE = import.meta.env.VITE_API_BASE ?? ''
+const BASE = import.meta.env.VITE_API_BASE ?? '/api'
 
 function readCookie(name: string): string | null {
   const match = document.cookie.match(

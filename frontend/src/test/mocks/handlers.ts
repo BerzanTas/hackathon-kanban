@@ -79,7 +79,61 @@ export const handlers = [
 
   // Board / teams / epics / tickets / comments (defaults)
   http.get('/teams', () => HttpResponse.json(TEAMS)),
+  http.post('/teams', async ({ request }) => {
+    const { name } = (await request.json()) as { name: string }
+    return HttpResponse.json(
+      {
+        id: 'team-new',
+        name,
+        createdAt: '2026-07-05T10:00:00Z',
+        modifiedAt: '2026-07-05T10:00:00Z',
+      },
+      { status: 201 },
+    )
+  }),
+  http.put('/teams/:id', async ({ params, request }) => {
+    const { name } = (await request.json()) as { name: string }
+    return HttpResponse.json({
+      id: String(params.id),
+      name,
+      createdAt: '2026-07-01T10:00:00Z',
+      modifiedAt: '2026-07-05T10:00:00Z',
+    })
+  }),
+  http.delete('/teams/:id', () => new HttpResponse(null, { status: 204 })),
   http.get('/teams/:teamId/epics', () => HttpResponse.json(EPICS)),
+  http.post('/teams/:teamId/epics', async ({ params, request }) => {
+    const body = (await request.json()) as {
+      title: string
+      description?: string | null
+    }
+    return HttpResponse.json(
+      {
+        id: 'epic-new',
+        team: { id: String(params.teamId), name: 'Alpha' },
+        title: body.title,
+        description: body.description ?? null,
+        createdAt: '2026-07-05T10:00:00Z',
+        modifiedAt: '2026-07-05T10:00:00Z',
+      },
+      { status: 201 },
+    )
+  }),
+  http.put('/epics/:id', async ({ params, request }) => {
+    const body = (await request.json()) as {
+      title: string
+      description?: string | null
+    }
+    return HttpResponse.json({
+      id: String(params.id),
+      team: { id: 'team-a', name: 'Alpha' },
+      title: body.title,
+      description: body.description ?? null,
+      createdAt: '2026-07-01T10:00:00Z',
+      modifiedAt: '2026-07-05T10:00:00Z',
+    })
+  }),
+  http.delete('/epics/:id', () => new HttpResponse(null, { status: 204 })),
   http.get('/teams/:teamId/tickets', () => HttpResponse.json(TICKETS)),
   http.post('/teams/:teamId/tickets', async ({ request }) => {
     const body = (await request.json()) as Record<string, unknown>
